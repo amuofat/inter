@@ -43,6 +43,7 @@ body.dark-mode {
 
 body {
   height: 100vh;
+  height: 100dvh; /* التوافق التام مع شاشات الهواتف الحديثة */
   overflow: hidden;
   font-family: 'Tajawal', sans-serif;
   background: var(--surface-alt);
@@ -59,6 +60,7 @@ body {
   grid-template-columns: 280px 1fr;
   grid-template-rows: 70px 1fr 40px;
   height: 100vh;
+  height: 100dvh; /* منع خروج التيكر عن الشاشة في الهواتف */
 }
 
 /* Header */
@@ -130,16 +132,19 @@ body {
 .app-main {
   grid-area: main; background: var(--surface-alt); padding: 1.5rem;
   display: flex; flex-direction: column; gap: 1.5rem; overflow: hidden;
+  min-height: 0; /* خطوة مهمة جداً لمنع المحتوى من تمديد الشاشة */
 }
 
 .featured-slide {
   flex: 1; position: relative; border-radius: var(--radius); overflow: hidden;
   background: var(--surface); border: 1px solid var(--border);
   box-shadow: var(--shadow-sm); display: flex;
+  min-height: 0; /* منع تمدد الشريحة */
 }
 .slide-content {
   flex: 1; padding: 2.5rem; display: flex; flex-direction: column; justify-content: center;
   transition: opacity 0.4s ease;
+  overflow-y: auto; /* السماح بالتمرير الداخلي في حالة كان النص طويلا */
 }
 .slide-media {
   flex: 1; background: var(--border-light); position: relative; display: none; overflow: hidden;
@@ -149,18 +154,21 @@ body {
 
 .slide-badge {
   align-self: flex-start; padding: 0.25rem 0.75rem; border-radius: 4px;
-  font-size: 0.75rem; font-weight: 700; margin-bottom: 1rem;
+  font-size: 0.75rem; font-weight: 700; margin-bottom: 1rem; flex-shrink: 0;
 }
 .badge-primary { background: var(--primary-light); color: var(--primary); }
 .badge-danger { background: #fee2e2; color: var(--danger); }
 
-.slide-title { font-family: 'Cairo', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--text); margin-bottom: 1rem; line-height: 1.4; }
+.slide-title { font-family: 'Cairo', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--text); margin-bottom: 1rem; line-height: 1.4; flex-shrink: 0;}
 .slide-body { font-size: 1.1rem; color: var(--text-secondary); max-width: 800px; line-height: 1.8; }
 
-.slide-meta { display: flex; gap: 1.5rem; margin-top: auto; font-size: 0.85rem; color: var(--text-muted); padding-top: 2rem;}
+.slide-meta { display: flex; gap: 1.5rem; margin-top: auto; font-size: 0.85rem; color: var(--text-muted); padding-top: 2rem; flex-shrink: 0;}
 .slide-meta span { display: flex; align-items: center; gap: 0.5rem; }
 
-.slide-nav { display: flex; align-items: center; gap: 1rem; background: var(--surface); padding: 1rem 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); }
+.slide-nav { 
+  display: flex; align-items: center; gap: 1rem; background: var(--surface); padding: 1rem 1.5rem; 
+  border-radius: var(--radius); border: 1px solid var(--border); flex-shrink: 0;
+}
 .slide-dots { display: flex; gap: 0.5rem; }
 .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); border: none; cursor: pointer; transition: 0.3s; }
 .nav-dot.active { background: var(--primary); width: 24px; border-radius: 4px; }
@@ -198,51 +206,48 @@ body {
   100% { transform: translateX(100%); } 
 }
 
-/* ================== إعدادات التوافق مع الهواتف والشاشات المختلفة ================== */
+/* ================== التوافق مع الهواتف والشاشات المختلفة ================== */
 
-/* أجهزة التابلت (شاشات متوسطة) */
+/* أجهزة التابلت */
 @media (max-width: 1024px) {
   #app { grid-template-columns: 1fr; grid-template-areas: "header" "main" "ticker"; }
   .app-sidebar { display: none; }
-  .featured-slide { flex-direction: column-reverse; } /* عرض الصورة في الأعلى والنص في الأسفل */
+  .featured-slide { flex-direction: column-reverse; }
   .slide-media.active { flex: 0.4; } 
 }
 
-/* الهواتف الذكية (شاشات صغيرة) */
+/* الهواتف الذكية */
 @media (max-width: 768px) {
-  /* تعديلات الشريط العلوي */
   .app-header { padding: 0 1rem; }
   .brand { gap: 0.5rem; }
   .brand-logo { width: 32px; height: 32px; flex-shrink: 0; }
   .brand-logo svg { width: 16px; height: 16px; }
   .brand-text h1 { font-size: 0.85rem; line-height: 1.4; }
-  .brand-text p { display: none; } /* إخفاء النص الفرعي لتوفير المساحة */
+  .brand-text p { display: none; } 
   
-  .header-center { display: none; } /* إخفاء كلمة نظام مباشر */
+  .header-center { display: none; } 
   
   .clock-container { margin-right: 0.25rem; }
   .clock-time { font-size: 0.95rem; }
-  .clock-date { display: none; } /* إخفاء التاريخ في الأعلى لأن المساحة ضيقة */
+  .clock-date { display: none; } 
   
   .action-btn { padding: 6px; }
   .action-btn svg { width: 18px; height: 18px; }
 
-  /* تعديلات مساحة العرض الرئيسية */
   .app-main { padding: 1rem; gap: 1rem; }
+  
   .slide-content { 
     padding: 1.25rem; 
-    overflow-y: auto; /* السماح بالتمرير إذا كان النص طويلاً */
     justify-content: flex-start;
   }
   .slide-title { font-size: 1.2rem; margin-bottom: 0.5rem; }
   .slide-body { font-size: 0.95rem; line-height: 1.6; }
   .slide-meta { padding-top: 1rem; flex-wrap: wrap; gap: 0.75rem; }
   
-  .slide-media.active { display: none; } /* إخفاء الميديا بالكامل في الهواتف لضمان عدم خروج النص عن الشاشة */
+  .slide-media.active { display: none; } 
   
   .slide-nav { padding: 0.75rem 1rem; }
 
-  /* تعديلات شريط الأخبار السفلي */
   .ticker-label { padding: 0 0.75rem; font-size: 0.8rem; }
   .ticker-item { padding: 0 1rem; font-size: 0.8rem; }
 }
@@ -250,7 +255,6 @@ body {
 </head>
 <body>
 
-<!-- عنصر الصوت للموسيقى (مخفي) -->
 <audio id="bgMusic" loop>
   <source src="music.mp3" type="audio/mpeg">
 </audio>
@@ -271,14 +275,12 @@ body {
       <!-- زر تشغيل/إيقاف الموسيقى -->
       <button class="action-btn" id="musicToggle" title="تشغيل الموسيقى">
         <svg id="musicIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <!-- أيقونة كتم الصوت (الحالة الافتراضية) -->
           <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
           <line x1="23" y1="9" x2="17" y2="15"></line>
           <line x1="17" y1="9" x2="23" y2="15"></line>
         </svg>
       </button>
 
-      <!-- زر تبديل الوضع الليلي/النهاري -->
       <button class="action-btn" id="themeToggle" title="تبديل الوضع">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
       </button>
@@ -333,7 +335,6 @@ body {
         </div>
       </div>
       <div class="slide-media" id="slideMediaContainer">
-        <!-- سيتم إضافة الصور أو الفيديو هنا عبر الجافاسكربت -->
       </div>
     </div>
 
@@ -346,25 +347,21 @@ body {
   <div class="app-ticker">
     <div class="ticker-label"><span class="live-indicator" style="background:transparent; display:inline-block; width:8px; height:8px; border-radius:50%; background:white; margin-left:5px;"></span> عاجل</div>
     <div class="ticker-track" id="tickerTrack">
-      <!-- يتم حقن شريط الأخبار اللانهائي هنا عبر الجافاسكربت -->
     </div>
   </div>
 </div>
 
 <script>
-// ==================== إعدادات الموسيقى الخلفية ====================
 const bgMusic = document.getElementById('bgMusic');
 const musicToggle = document.getElementById('musicToggle');
 const musicIcon = document.getElementById('musicIcon');
 let isMusicPlaying = false;
 
-// ضبط مستوى الصوت ليكون هادئاً (20%)
 bgMusic.volume = 0.2;
 
 musicToggle.addEventListener('click', () => {
   if (isMusicPlaying) {
     bgMusic.pause();
-    // تغيير الأيقونة إلى كتم الصوت
     musicIcon.innerHTML = `
       <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
       <line x1="23" y1="9" x2="17" y2="15"></line>
@@ -373,7 +370,6 @@ musicToggle.addEventListener('click', () => {
     musicToggle.title = "تشغيل الموسيقى";
   } else {
     bgMusic.play().catch(error => console.log("المتصفح منع التشغيل التلقائي"));
-    // تغيير الأيقونة إلى صوت يعمل
     musicIcon.innerHTML = `
       <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
       <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
@@ -383,7 +379,6 @@ musicToggle.addEventListener('click', () => {
   isMusicPlaying = !isMusicPlaying;
 });
 
-// ==================== بيانات الصفحة ====================
 let dashboardData = {
   slides: [
     {
@@ -416,7 +411,6 @@ let dashboardData = {
   ]
 };
 
-// ==================== Ticker Setup ====================
 function initTicker() {
   const track = document.getElementById('tickerTrack');
   const html = dashboardData.ticker.map(item => `<div class="ticker-item">${item}</div>`).join('<span class="ticker-separator">|</span>');
@@ -428,7 +422,6 @@ function initTicker() {
 }
 initTicker();
 
-// ==================== Slides Setup ====================
 let currentSlide = 0;
 const slideDuration = 10000;
 let slideTimer = null;
@@ -504,7 +497,6 @@ renderSlide(0);
 startProgress();
 slideTimer = setTimeout(nextSlide, slideDuration);
 
-// ==================== Clock & Theme ====================
 document.getElementById('themeToggle').addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
 });
