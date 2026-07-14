@@ -89,12 +89,13 @@ body {
 .live-indicator::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--danger); animation: blink 2s infinite; }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-.header-actions { display: flex; align-items: center; gap: 1.5rem; }
-.theme-toggle {
+.header-actions { display: flex; align-items: center; gap: 0.5rem; }
+.action-btn {
   background: transparent; border: none; color: var(--text-secondary); cursor: pointer;
   display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 50%; transition: 0.2s;
 }
-.theme-toggle:hover { background: var(--surface-alt); color: var(--primary); }
+.action-btn:hover { background: var(--surface-alt); color: var(--primary); }
+.clock-container { display: flex; flex-direction: column; align-items: flex-end; margin-right: 1rem; }
 .clock-time { font-family: 'Cairo', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--primary); direction: ltr; text-align: right;}
 .clock-date { font-size: 0.8rem; color: var(--text-secondary); }
 
@@ -166,7 +167,7 @@ body {
 .slide-progress { flex: 1; height: 4px; background: var(--surface-alt); border-radius: 2px; overflow: hidden; }
 .slide-progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.1s linear; }
 
-/* Ticker - Pure CSS Continuous Loop */
+/* Ticker */
 .app-ticker {
   grid-area: ticker; background: var(--primary); color: white;
   display: flex; align-items: center; overflow: hidden; position: relative;
@@ -192,7 +193,6 @@ body {
 .ticker-item strong { color: #cbd5e1; margin-left: 0.3rem; }
 .ticker-separator { color: rgba(255,255,255,0.3); }
 
-/* اتجاه الحركة مع دعم توافق المتصفحات من اليمين لليسار */
 @keyframes ticker-slide {
   0% { transform: translateX(0); }
   100% { transform: translateX(100%); } 
@@ -207,6 +207,11 @@ body {
 </head>
 <body>
 
+<!-- عنصر الصوت للموسيقى (مخفي) -->
+<audio id="bgMusic" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
 <div id="app">
   <header class="app-header">
     <div class="brand">
@@ -220,8 +225,22 @@ body {
       <div class="live-indicator">نظام العرض المباشر متصل</div>
     </div>
     <div class="header-actions">
-      <button class="theme-toggle" id="themeToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></button>
-      <div>
+      <!-- زر تشغيل/إيقاف الموسيقى -->
+      <button class="action-btn" id="musicToggle" title="تشغيل الموسيقى">
+        <svg id="musicIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <!-- أيقونة كتم الصوت (الحالة الافتراضية) -->
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <line x1="23" y1="9" x2="17" y2="15"></line>
+          <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+      </button>
+
+      <!-- زر تبديل الوضع الليلي/النهاري -->
+      <button class="action-btn" id="themeToggle" title="تبديل الوضع">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      </button>
+      
+      <div class="clock-container">
         <div class="clock-time" id="clockTime">00:00</div>
         <div class="clock-date" id="clockDate">--</div>
       </div>
@@ -290,6 +309,37 @@ body {
 </div>
 
 <script>
+// ==================== إعدادات الموسيقى الخلفية ====================
+const bgMusic = document.getElementById('bgMusic');
+const musicToggle = document.getElementById('musicToggle');
+const musicIcon = document.getElementById('musicIcon');
+let isMusicPlaying = false;
+
+// ضبط مستوى الصوت ليكون هادئاً (20%)
+bgMusic.volume = 0.2;
+
+musicToggle.addEventListener('click', () => {
+  if (isMusicPlaying) {
+    bgMusic.pause();
+    // تغيير الأيقونة إلى كتم الصوت
+    musicIcon.innerHTML = `
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+      <line x1="23" y1="9" x2="17" y2="15"></line>
+      <line x1="17" y1="9" x2="23" y2="15"></line>
+    `;
+    musicToggle.title = "تشغيل الموسيقى";
+  } else {
+    bgMusic.play().catch(error => console.log("المتصفح منع التشغيل التلقائي"));
+    // تغيير الأيقونة إلى صوت يعمل
+    musicIcon.innerHTML = `
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+    `;
+    musicToggle.title = "إيقاف الموسيقى";
+  }
+  isMusicPlaying = !isMusicPlaying;
+});
+
 // ==================== بيانات الصفحة ====================
 let dashboardData = {
   slides: [
@@ -328,7 +378,6 @@ function initTicker() {
   const track = document.getElementById('tickerTrack');
   const html = dashboardData.ticker.map(item => `<div class="ticker-item">${item}</div>`).join('<span class="ticker-separator">|</span>');
   const groupContent = html + '<span class="ticker-separator">|</span>';
-  // مجموعتين لضمان حلقة لا نهائية (Infinite Loop)
   track.innerHTML = `
     <div class="ticker-group">${groupContent}</div>
     <div class="ticker-group">${groupContent}</div>
@@ -366,7 +415,6 @@ function renderSlide(index) {
     document.getElementById('slideDate').textContent = slide.date;
     document.getElementById('slideCategory').textContent = slide.category;
     
-    // Media Rendering
     if (slide.media && slide.media.trim() !== '') {
       slideMediaContainer.classList.add('active');
       if(slide.media.match(/\.(mp4|webm|ogg)$/i)) {
@@ -409,7 +457,6 @@ function nextSlide() {
   goToSlide((currentSlide + 1) % dashboardData.slides.length); 
 }
 
-// تشغيل السلايدر
 renderSlide(0);
 startProgress();
 slideTimer = setTimeout(nextSlide, slideDuration);
@@ -422,10 +469,8 @@ document.getElementById('themeToggle').addEventListener('click', () => {
 function updateClock() {
   const now = new Date();
   
-  // صيغة الوقت 24 ساعة
   document.getElementById('clockTime').textContent = now.toLocaleTimeString('ar-DZ', { hour: '2-digit', minute: '2-digit', hour12: false });
   
-  // إجبار المتصفح على استخدام الأشهر الجزائرية (بدل يوليو/يونيو)
   const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
   const months = ['جانفي', 'فيفري', 'مارس', 'أفريل', 'ماي', 'جوان', 'جويلية', 'أوت', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
   
