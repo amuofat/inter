@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المديرية الجهوية للأملاك الوطنية - قسنطينة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* ألوان احترافية هادئة */
+  --primary: #1e3a8a;
+  --primary-light: #eff6ff;
+  --surface: #ffffff;
+  --surface-alt: #f8fafc;
+  --surface-dark: #0f172a;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --text: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --success: #059669;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --radius: 12px;
+}
+
+body.dark-mode {
+  --primary: #3b82f6;
+  --primary-light: #1e293b;
+  --surface: #0f172a;
+  --surface-alt: #1e293b;
+  --border: #334155;
+  --border-light: #1e293b;
+  --text: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Tajawal', sans-serif;
+  background: var(--surface-alt);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+#app {
+  display: grid;
+  grid-template-areas:
+    "header header"
+    "sidebar main"
+    "ticker ticker";
+  grid-template-columns: 280px 1fr;
+  grid-template-rows: 70px 1fr 40px;
+  height: 100vh;
+}
+
+/* Header */
+.app-header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+}
+
+.brand { display: flex; align-items: center; gap: 1rem; }
+.brand-logo {
+  width: 40px; height: 40px;
+  border-radius: 8px;
+  background: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+}
+.brand-logo svg { width: 20px; height: 20px; fill: var(--surface); }
+.brand-text h1 { font-family: 'Cairo', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+.brand-text p { font-size: 0.8rem; color: var(--text-secondary); }
+
+.header-center { text-align: center; }
+.live-indicator { font-size: 0.75rem; font-weight: 600; color: var(--danger); display: flex; align-items: center; justify-content: center; gap: 6px; }
+.live-indicator::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--danger); animation: blink 2s infinite; }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.header-actions { display: flex; align-items: center; gap: 1.5rem; }
+.theme-toggle {
+  background: transparent; border: none; color: var(--text-secondary); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 50%; transition: 0.2s;
+}
+.theme-toggle:hover { background: var(--surface-alt); color: var(--primary); }
+.clock-time { font-family: 'Cairo', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--primary); direction: ltr; text-align: right;}
+.clock-date { font-size: 0.8rem; color: var(--text-secondary); }
+
+/* Sidebar */
+.app-sidebar {
+  grid-area: sidebar; background: var(--surface);
+  border-left: 1px solid var(--border); padding: 1.5rem; overflow-y: auto;
+}
+.sidebar-section { padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-light); margin-bottom: 1.5rem; }
+.sidebar-section:last-child { border-bottom: none; margin-bottom: 0; }
+.section-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; color: var(--text-secondary); }
+.section-header h3 { font-family: 'Cairo', sans-serif; font-size: 0.9rem; font-weight: 700; }
+
+.weather-main { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.weather-temp { font-family: 'Cairo', sans-serif; font-size: 2rem; font-weight: 700; color: var(--primary); }
+.weather-desc { font-size: 0.85rem; color: var(--text-secondary); }
+.weather-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.8rem; color: var(--text-secondary); }
+.weather-meta span { display: flex; align-items: center; gap: 0.4rem; }
+
+.status-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; margin-bottom: 0.8rem; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; }
+.status-dot.online { background: var(--success); }
+.status-dot.busy { background: var(--warning); }
+.status-label { flex: 1; color: var(--text-secondary); }
+.status-value { font-weight: 600; font-family: 'Cairo', sans-serif; }
+
+.stat-box { background: var(--surface-alt); border-radius: 8px; padding: 1rem; text-align: center; margin-bottom: 0.75rem; border: 1px solid var(--border-light); }
+.stat-number { font-family: 'Cairo', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--primary); display: block; }
+.stat-label { font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.2rem; display: block; }
+
+/* Main */
+.app-main {
+  grid-area: main; background: var(--surface-alt); padding: 1.5rem;
+  display: flex; flex-direction: column; gap: 1.5rem; overflow: hidden;
+}
+
+.featured-slide {
+  flex: 1; position: relative; border-radius: var(--radius); overflow: hidden;
+  background: var(--surface); border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm); display: flex;
+}
+.slide-content {
+  flex: 1; padding: 2.5rem; display: flex; flex-direction: column; justify-content: center;
+  transition: opacity 0.4s ease;
+}
+.slide-media {
+  flex: 1; background: var(--border-light); position: relative; display: none; overflow: hidden;
+}
+.slide-media.active { display: block; }
+.slide-media img, .slide-media video { width: 100%; height: 100%; object-fit: cover; }
+
+.slide-badge {
+  align-self: flex-start; padding: 0.25rem 0.75rem; border-radius: 4px;
+  font-size: 0.75rem; font-weight: 700; margin-bottom: 1rem;
+}
+.badge-primary { background: var(--primary-light); color: var(--primary); }
+.badge-danger { background: #fee2e2; color: var(--danger); }
+
+.slide-title { font-family: 'Cairo', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--text); margin-bottom: 1rem; line-height: 1.4; }
+.slide-body { font-size: 1.1rem; color: var(--text-secondary); max-width: 800px; line-height: 1.8; }
+
+.slide-meta { display: flex; gap: 1.5rem; margin-top: auto; font-size: 0.85rem; color: var(--text-muted); padding-top: 2rem;}
+.slide-meta span { display: flex; align-items: center; gap: 0.5rem; }
+
+.slide-nav { display: flex; align-items: center; gap: 1rem; background: var(--surface); padding: 1rem 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); }
+.slide-dots { display: flex; gap: 0.5rem; }
+.nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); border: none; cursor: pointer; transition: 0.3s; }
+.nav-dot.active { background: var(--primary); width: 24px; border-radius: 4px; }
+.slide-progress { flex: 1; height: 4px; background: var(--surface-alt); border-radius: 2px; overflow: hidden; }
+.slide-progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.1s linear; }
+
+/* Ticker - Pure CSS Continuous Loop */
+.app-ticker {
+  grid-area: ticker; background: var(--primary); color: white;
+  display: flex; align-items: center; overflow: hidden; position: relative;
+}
+.ticker-label {
+  background: var(--danger); font-family: 'Cairo', sans-serif; font-weight: 700;
+  padding: 0 1.5rem; height: 100%; display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.9rem; z-index: 2; flex-shrink: 0; box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+}
+.ticker-track { 
+  flex: 1; overflow: hidden; display: flex; align-items: center; height: 100%; 
+}
+.ticker-group {
+  display: flex; align-items: center; flex-shrink: 0; white-space: nowrap;
+  animation: ticker-slide 40s linear infinite;
+}
+.ticker-track:hover .ticker-group { 
+  animation-play-state: paused; 
+}
+.ticker-item { 
+  padding: 0 1.5rem; font-size: 0.9rem; display: inline-flex; align-items: center; 
+}
+.ticker-item strong { color: #cbd5e1; margin-left: 0.3rem; }
+.ticker-separator { color: rgba(255,255,255,0.3); }
+
+/* اتجاه الحركة مع دعم توافق المتصفحات من اليمين لليسار */
+@keyframes ticker-slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(100%); } 
+}
+
+@media (max-width: 1024px) {
+  #app { grid-template-columns: 1fr; grid-template-areas: "header" "main" "ticker"; }
+  .app-sidebar { display: none; }
+  .slide-title { font-size: 1.4rem; }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-logo"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+      <div class="brand-text">
+        <h1>المديرية الجهوية للأملاك الوطنية بقسنطينة</h1>
+        <p>البوابة الرقمية للمعلومات العقارية</p>
+      </div>
+    </div>
+    <div class="header-center">
+      <div class="live-indicator">نظام العرض المباشر متصل</div>
+    </div>
+    <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></button>
+      <div>
+        <div class="clock-time" id="clockTime">00:00</div>
+        <div class="clock-date" id="clockDate">--</div>
+      </div>
+    </div>
+  </header>
+
+  <aside class="app-sidebar">
+    <div class="sidebar-section">
+      <div class="section-header"><h3>الطقس - خنشلة</h3></div>
+      <div class="weather-main">
+        <div>
+          <div class="weather-temp">24°</div>
+          <div class="weather-desc">سماء صافية</div>
+        </div>
+      </div>
+      <div class="weather-meta">
+        <span>الرطوبة: 45%</span>
+        <span>الرياح: 12 كم/س</span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="section-header"><h3>حالة النظام</h3></div>
+      <div class="status-item"><div class="status-dot online"></div><span class="status-label">قاعدة البيانات</span><span class="status-value">متصل</span></div>
+      <div class="status-item"><div class="status-dot online"></div><span class="status-label">الأرشيف الرقمي</span><span class="status-value">يعمل</span></div>
+      <div class="status-item"><div class="status-dot busy"></div><span class="status-label">تحديث البيانات</span><span class="status-value">قيد المعالجة</span></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="section-header"><h3>إحصائيات الشهر</h3></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="stat-box"><span class="stat-number">124</span><span class="stat-label">ملف مُعالج</span></div>
+        <div class="stat-box"><span class="stat-number">85</span><span class="stat-label">عملية مسح</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="featured-slide" id="featuredSlide">
+      <div class="slide-content" id="slideInner">
+        <span class="slide-badge" id="slideBadge">إعلان هام</span>
+        <h2 class="slide-title" id="slideTitle">جاري تحميل البيانات...</h2>
+        <p class="slide-body" id="slideText">يرجى الانتظار بينما يتم جلب أحدث الإعلانات من قاعدة البيانات.</p>
+        <div class="slide-meta">
+          <span id="slideDate">--</span>
+          <span id="slideCategory">--</span>
+        </div>
+      </div>
+      <div class="slide-media" id="slideMediaContainer">
+        <!-- سيتم إضافة الصور أو الفيديو هنا عبر الجافاسكربت -->
+      </div>
+    </div>
+
+    <div class="slide-nav">
+      <div class="slide-dots" id="slideDots"></div>
+      <div class="slide-progress"><div class="slide-progress-bar" id="progressBar"></div></div>
+    </div>
+  </main>
+
+  <div class="app-ticker">
+    <div class="ticker-label"><span class="live-indicator" style="background:transparent; display:inline-block; width:8px; height:8px; border-radius:50%; background:white; margin-left:5px;"></span> عاجل</div>
+    <div class="ticker-track" id="tickerTrack">
+      <!-- يتم حقن شريط الأخبار اللانهائي هنا عبر الجافاسكربت -->
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== بيانات الصفحة ====================
+let dashboardData = {
+  slides: [
+    {
+      badge: 'إعلان هام', type: 'primary',
+      title: 'فتح باب التسجيل في عملية المسح العقاري الجديدة',
+      text: 'تعلن المديرية الجهوية للأملاك الوطنية بقسنطينة عن فتح باب التسجيل في حملة المسح العقاري الشامل. يُرجى من المواطنين المعنيين التقدم إلى المقرات المخصصة بكافة الوثائق المطلوبة.',
+      date: '14 جويلية 2026', category: 'المسح العقاري',
+      media: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop'
+    },
+    {
+      badge: 'تنبيه', type: 'danger',
+      title: 'تحديث مواعيد الاستقبال الجماهيري',
+      text: 'يُعلم الجميع أن مواعيد الاستقبال قد تم تعديلها لتصبح من 8:00 صباحاً إلى 12:00 ظهراً، ومن 13:00 إلى 16:00 مساءً.',
+      date: '13 جويلية 2026', category: 'إدارة',
+      media: '' 
+    },
+    {
+      badge: 'جديد', type: 'primary',
+      title: 'انطلاق مشروع رقمنة الأرشيف العقاري',
+      text: 'في إطار التحول الرقمي، تم الشروع في رقمنة كافة الوثائق والسجلات العقارية لتسهيل الوصول للمعلومات وتحسين جودة الخدمات.',
+      date: '10 جويلية 2026', category: 'التحول الرقمي',
+      media: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=800&auto=format&fit=crop'
+    }
+  ],
+  ticker: [
+    '<strong>تذكير:</strong> الاستقبال الجماهيري من 8:00 إلى 12:00 ومن 13:00 إلى 16:00',
+    '<strong>جديد:</strong> تم رقمنة أكثر من 12,800 وثيقة عقارية بولاية خنشلة',
+    '<strong>خدمة:</strong> المكتب المفتوح لتسريع معالجة الملفات متوفر يومياً',
+    '<strong>إنجاز:</strong> معالجة 5,240 ملف عقاري خلال النصف الأول من 2026'
+  ]
+};
+
+// ==================== Ticker Setup ====================
+function initTicker() {
+  const track = document.getElementById('tickerTrack');
+  const html = dashboardData.ticker.map(item => `<div class="ticker-item">${item}</div>`).join('<span class="ticker-separator">|</span>');
+  const groupContent = html + '<span class="ticker-separator">|</span>';
+  // مجموعتين لضمان حلقة لا نهائية (Infinite Loop)
+  track.innerHTML = `
+    <div class="ticker-group">${groupContent}</div>
+    <div class="ticker-group">${groupContent}</div>
+  `;
+}
+initTicker();
+
+// ==================== Slides Setup ====================
+let currentSlide = 0;
+const slideDuration = 10000;
+let slideTimer = null;
+let progressInterval = null;
+
+const slideInner = document.getElementById('slideInner');
+const slideMediaContainer = document.getElementById('slideMediaContainer');
+const slideDots = document.getElementById('slideDots');
+const progressBar = document.getElementById('progressBar');
+
+dashboardData.slides.forEach((_, i) => {
+  const dot = document.createElement('button');
+  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(i));
+  slideDots.appendChild(dot);
+});
+
+function renderSlide(index) {
+  const slide = dashboardData.slides[index];
+  slideInner.style.opacity = '0';
+  
+  setTimeout(() => {
+    document.getElementById('slideBadge').className = `slide-badge badge-${slide.type}`;
+    document.getElementById('slideBadge').textContent = slide.badge;
+    document.getElementById('slideTitle').textContent = slide.title;
+    document.getElementById('slideText').textContent = slide.text;
+    document.getElementById('slideDate').textContent = slide.date;
+    document.getElementById('slideCategory').textContent = slide.category;
+    
+    // Media Rendering
+    if (slide.media && slide.media.trim() !== '') {
+      slideMediaContainer.classList.add('active');
+      if(slide.media.match(/\.(mp4|webm|ogg)$/i)) {
+        slideMediaContainer.innerHTML = `<video src="${slide.media}" autoplay loop muted></video>`;
+      } else {
+        slideMediaContainer.innerHTML = `<img src="${slide.media}" alt="Slide Media">`;
+      }
+    } else {
+      slideMediaContainer.classList.remove('active');
+      slideMediaContainer.innerHTML = '';
+    }
+
+    slideInner.style.opacity = '1';
+  }, 300);
+  
+  document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === index));
+}
+
+function startProgress() {
+  let start = Date.now();
+  progressBar.style.width = '0%';
+  if (progressInterval) clearInterval(progressInterval);
+  
+  progressInterval = setInterval(() => {
+    const pct = Math.min(((Date.now() - start) / slideDuration) * 100, 100);
+    progressBar.style.width = pct + '%';
+    if (pct >= 100) clearInterval(progressInterval);
+  }, 50);
+}
+
+function goToSlide(index) {
+  if (slideTimer) clearTimeout(slideTimer);
+  currentSlide = index;
+  renderSlide(currentSlide);
+  startProgress();
+  slideTimer = setTimeout(nextSlide, slideDuration);
+}
+
+function nextSlide() { 
+  goToSlide((currentSlide + 1) % dashboardData.slides.length); 
+}
+
+// تشغيل السلايدر
+renderSlide(0);
+startProgress();
+slideTimer = setTimeout(nextSlide, slideDuration);
+
+// ==================== Clock & Theme ====================
+document.getElementById('themeToggle').addEventListener('click', () => {
+  document.body.classList.toggle('dark-mode');
+});
+
+function updateClock() {
+  const now = new Date();
+  
+  // صيغة الوقت 24 ساعة
+  document.getElementById('clockTime').textContent = now.toLocaleTimeString('ar-DZ', { hour: '2-digit', minute: '2-digit', hour12: false });
+  
+  // إجبار المتصفح على استخدام الأشهر الجزائرية (بدل يوليو/يونيو)
+  const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+  const months = ['جانفي', 'فيفري', 'مارس', 'أفريل', 'ماي', 'جوان', 'جويلية', 'أوت', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+  
+  const dayName = days[now.getDay()];
+  const dayNum = now.getDate();
+  const monthName = months[now.getMonth()];
+  const year = now.getFullYear();
+  
+  document.getElementById('clockDate').textContent = `${dayName} ${dayNum} ${monthName} ${year}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+</script>
+</body>
+</html>
