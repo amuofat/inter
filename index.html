@@ -198,10 +198,53 @@ body {
   100% { transform: translateX(100%); } 
 }
 
+/* ================== إعدادات التوافق مع الهواتف والشاشات المختلفة ================== */
+
+/* أجهزة التابلت (شاشات متوسطة) */
 @media (max-width: 1024px) {
   #app { grid-template-columns: 1fr; grid-template-areas: "header" "main" "ticker"; }
   .app-sidebar { display: none; }
-  .slide-title { font-size: 1.4rem; }
+  .featured-slide { flex-direction: column-reverse; } /* عرض الصورة في الأعلى والنص في الأسفل */
+  .slide-media.active { flex: 0.4; } 
+}
+
+/* الهواتف الذكية (شاشات صغيرة) */
+@media (max-width: 768px) {
+  /* تعديلات الشريط العلوي */
+  .app-header { padding: 0 1rem; }
+  .brand { gap: 0.5rem; }
+  .brand-logo { width: 32px; height: 32px; flex-shrink: 0; }
+  .brand-logo svg { width: 16px; height: 16px; }
+  .brand-text h1 { font-size: 0.85rem; line-height: 1.4; }
+  .brand-text p { display: none; } /* إخفاء النص الفرعي لتوفير المساحة */
+  
+  .header-center { display: none; } /* إخفاء كلمة نظام مباشر */
+  
+  .clock-container { margin-right: 0.25rem; }
+  .clock-time { font-size: 0.95rem; }
+  .clock-date { display: none; } /* إخفاء التاريخ في الأعلى لأن المساحة ضيقة */
+  
+  .action-btn { padding: 6px; }
+  .action-btn svg { width: 18px; height: 18px; }
+
+  /* تعديلات مساحة العرض الرئيسية */
+  .app-main { padding: 1rem; gap: 1rem; }
+  .slide-content { 
+    padding: 1.25rem; 
+    overflow-y: auto; /* السماح بالتمرير إذا كان النص طويلاً */
+    justify-content: flex-start;
+  }
+  .slide-title { font-size: 1.2rem; margin-bottom: 0.5rem; }
+  .slide-body { font-size: 0.95rem; line-height: 1.6; }
+  .slide-meta { padding-top: 1rem; flex-wrap: wrap; gap: 0.75rem; }
+  
+  .slide-media.active { display: none; } /* إخفاء الميديا بالكامل في الهواتف لضمان عدم خروج النص عن الشاشة */
+  
+  .slide-nav { padding: 0.75rem 1rem; }
+
+  /* تعديلات شريط الأخبار السفلي */
+  .ticker-label { padding: 0 0.75rem; font-size: 0.8rem; }
+  .ticker-item { padding: 0 1rem; font-size: 0.8rem; }
 }
 </style>
 </head>
