@@ -7,7 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* ألوان احترافية هادئة */
   --primary: #1e3a8a;
   --primary-light: #eff6ff;
   --surface: #ffffff;
@@ -43,7 +42,7 @@ body.dark-mode {
 
 body {
   height: 100vh;
-  height: 100dvh; /* التوافق التام مع شاشات الهواتف الحديثة */
+  height: 100dvh;
   overflow: hidden;
   font-family: 'Tajawal', sans-serif;
   background: var(--surface-alt);
@@ -58,9 +57,9 @@ body {
     "sidebar main"
     "ticker ticker";
   grid-template-columns: 280px 1fr;
-  grid-template-rows: 70px 1fr 40px;
+  grid-template-rows: 70px 1fr 60px;
   height: 100vh;
-  height: 100dvh; /* منع خروج التيكر عن الشاشة في الهواتف */
+  height: 100dvh;
 }
 
 /* Header */
@@ -97,6 +96,7 @@ body {
   display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 50%; transition: 0.2s;
 }
 .action-btn:hover { background: var(--surface-alt); color: var(--primary); }
+.action-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 .clock-container { display: flex; flex-direction: column; align-items: flex-end; margin-right: 1rem; }
 .clock-time { font-family: 'Cairo', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--primary); direction: ltr; text-align: right;}
 .clock-date { font-size: 0.8rem; color: var(--text-secondary); }
@@ -116,11 +116,13 @@ body {
 .weather-desc { font-size: 0.85rem; color: var(--text-secondary); }
 .weather-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.8rem; color: var(--text-secondary); }
 .weather-meta span { display: flex; align-items: center; gap: 0.4rem; }
+.weather-error { font-size: 0.8rem; color: var(--text-muted); }
 
 .status-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; margin-bottom: 0.8rem; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; }
 .status-dot.online { background: var(--success); }
 .status-dot.busy { background: var(--warning); }
+.status-dot.offline { background: var(--danger); }
 .status-label { flex: 1; color: var(--text-secondary); }
 .status-value { font-weight: 600; font-family: 'Cairo', sans-serif; }
 
@@ -132,19 +134,19 @@ body {
 .app-main {
   grid-area: main; background: var(--surface-alt); padding: 1.5rem;
   display: flex; flex-direction: column; gap: 1.5rem; overflow: hidden;
-  min-height: 0; /* خطوة مهمة جداً لمنع المحتوى من تمديد الشاشة */
+  min-height: 0;
 }
 
 .featured-slide {
   flex: 1; position: relative; border-radius: var(--radius); overflow: hidden;
   background: var(--surface); border: 1px solid var(--border);
   box-shadow: var(--shadow-sm); display: flex;
-  min-height: 0; /* منع تمدد الشريحة */
+  min-height: 0;
 }
 .slide-content {
   flex: 1; padding: 2.5rem; display: flex; flex-direction: column; justify-content: center;
   transition: opacity 0.4s ease;
-  overflow-y: auto; /* السماح بالتمرير الداخلي في حالة كان النص طويلا */
+  overflow-y: auto;
 }
 .slide-media {
   flex: 1; background: var(--border-light); position: relative; display: none; overflow: hidden;
@@ -165,91 +167,97 @@ body {
 .slide-meta { display: flex; gap: 1.5rem; margin-top: auto; font-size: 0.85rem; color: var(--text-muted); padding-top: 2rem; flex-shrink: 0;}
 .slide-meta span { display: flex; align-items: center; gap: 0.5rem; }
 
-.slide-nav { 
-  display: flex; align-items: center; gap: 1rem; background: var(--surface); padding: 1rem 1.5rem; 
+.slide-nav {
+  display: flex; align-items: center; gap: 1rem; background: var(--surface); padding: 1rem 1.5rem;
   border-radius: var(--radius); border: 1px solid var(--border); flex-shrink: 0;
 }
 .slide-dots { display: flex; gap: 0.5rem; }
 .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); border: none; cursor: pointer; transition: 0.3s; }
 .nav-dot.active { background: var(--primary); width: 24px; border-radius: 4px; }
+.nav-dot:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 .slide-progress { flex: 1; height: 4px; background: var(--surface-alt); border-radius: 2px; overflow: hidden; }
 .slide-progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.1s linear; }
 
-/* Ticker */
+/* Ticker - bigger, robust seamless loop */
 .app-ticker {
   grid-area: ticker; background: var(--primary); color: white;
   display: flex; align-items: center; overflow: hidden; position: relative;
+  min-height: 60px;
 }
 .ticker-label {
   background: var(--danger); font-family: 'Cairo', sans-serif; font-weight: 700;
-  padding: 0 1.5rem; height: 100%; display: flex; align-items: center; gap: 0.5rem;
-  font-size: 0.9rem; z-index: 2; flex-shrink: 0; box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+  padding: 0 2rem; height: 100%; display: flex; align-items: center; gap: 0.6rem;
+  font-size: 1.05rem; z-index: 2; flex-shrink: 0; box-shadow: 2px 0 5px rgba(0,0,0,0.2);
 }
-.ticker-track { 
-  flex: 1; overflow: hidden; display: flex; align-items: center; height: 100%; 
+.ticker-track {
+  flex: 1; overflow: hidden; display: flex; align-items: center; height: 100%;
+  position: relative;
 }
 .ticker-group {
   display: flex; align-items: center; flex-shrink: 0; white-space: nowrap;
   animation: ticker-slide 40s linear infinite;
+  will-change: transform;
 }
-.ticker-track:hover .ticker-group { 
-  animation-play-state: paused; 
+.ticker-track:hover .ticker-group {
+  animation-play-state: paused;
 }
-.ticker-item { 
-  padding: 0 1.5rem; font-size: 0.9rem; display: inline-flex; align-items: center; 
+.ticker-item {
+  padding: 0 2rem; font-size: 1.15rem; font-weight: 500;
+  display: inline-flex; align-items: center;
 }
-.ticker-item strong { color: #cbd5e1; margin-left: 0.3rem; }
+.ticker-item strong { color: #e2e8f0; margin-left: 0.4rem; font-weight: 700; }
 .ticker-separator { color: rgba(255,255,255,0.3); }
 
+/* Seamless loop: single wrapper containing two identical copies, shifted by -50% of its own width */
 @keyframes ticker-slide {
   0% { transform: translateX(0); }
-  100% { transform: translateX(100%); } 
+  100% { transform: translateX(-50%); }
 }
 
-/* ================== التوافق مع الهواتف والشاشات المختلفة ================== */
+/* ================== Responsive ================== */
 
-/* أجهزة التابلت */
 @media (max-width: 1024px) {
   #app { grid-template-columns: 1fr; grid-template-areas: "header" "main" "ticker"; }
   .app-sidebar { display: none; }
   .featured-slide { flex-direction: column-reverse; }
-  .slide-media.active { flex: 0.4; } 
+  .slide-media.active { flex: 0.4; }
 }
 
-/* الهواتف الذكية */
 @media (max-width: 768px) {
   .app-header { padding: 0 1rem; }
   .brand { gap: 0.5rem; }
   .brand-logo { width: 32px; height: 32px; flex-shrink: 0; }
   .brand-logo svg { width: 16px; height: 16px; }
   .brand-text h1 { font-size: 0.85rem; line-height: 1.4; }
-  .brand-text p { display: none; } 
-  
-  .header-center { display: none; } 
-  
+  .brand-text p { display: none; }
+
+  .header-center { display: none; }
+
   .clock-container { margin-right: 0.25rem; }
   .clock-time { font-size: 0.95rem; }
-  .clock-date { display: none; } 
-  
+  .clock-date { display: none; }
+
   .action-btn { padding: 6px; }
   .action-btn svg { width: 18px; height: 18px; }
 
   .app-main { padding: 1rem; gap: 1rem; }
-  
-  .slide-content { 
-    padding: 1.25rem; 
+
+  .slide-content {
+    padding: 1.25rem;
     justify-content: flex-start;
   }
   .slide-title { font-size: 1.2rem; margin-bottom: 0.5rem; }
   .slide-body { font-size: 0.95rem; line-height: 1.6; }
   .slide-meta { padding-top: 1rem; flex-wrap: wrap; gap: 0.75rem; }
-  
-  .slide-media.active { display: none; } 
-  
+
+  /* Shrink media instead of hiding it entirely, keeps visual context on mobile */
+  .featured-slide { flex-direction: column-reverse; }
+  .slide-media.active { display: block; flex: 0 0 110px; }
+
   .slide-nav { padding: 0.75rem 1rem; }
 
-  .ticker-label { padding: 0 0.75rem; font-size: 0.8rem; }
-  .ticker-item { padding: 0 1rem; font-size: 0.8rem; }
+  .ticker-label { padding: 0 1rem; font-size: 0.9rem; }
+  .ticker-item { padding: 0 1.25rem; font-size: 1rem; }
 }
 </style>
 </head>
@@ -262,31 +270,30 @@ body {
 <div id="app">
   <header class="app-header">
     <div class="brand">
-      <div class="brand-logo"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+      <div class="brand-logo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
       <div class="brand-text">
         <h1>المديرية الجهوية للأملاك الوطنية بقسنطينة</h1>
         <p>البوابة الرقمية للمعلومات العقارية</p>
       </div>
     </div>
     <div class="header-center">
-      <div class="live-indicator">نظام العرض المباشر متصل</div>
+      <div class="live-indicator" role="status">نظام العرض المباشر متصل</div>
     </div>
     <div class="header-actions">
-      <!-- زر تشغيل/إيقاف الموسيقى -->
-      <button class="action-btn" id="musicToggle" title="تشغيل الموسيقى">
-        <svg id="musicIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button class="action-btn" id="musicToggle" title="تشغيل الموسيقى" aria-label="تشغيل أو إيقاف الموسيقى">
+        <svg id="musicIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
           <line x1="23" y1="9" x2="17" y2="15"></line>
           <line x1="17" y1="9" x2="23" y2="15"></line>
         </svg>
       </button>
 
-      <button class="action-btn" id="themeToggle" title="تبديل الوضع">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <button class="action-btn" id="themeToggle" title="تبديل الوضع" aria-label="تبديل الوضع الليلي">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
       </button>
-      
+
       <div class="clock-container">
-        <div class="clock-time" id="clockTime">00:00</div>
+        <div class="clock-time" id="clockTime" aria-live="off">00:00</div>
         <div class="clock-date" id="clockDate">--</div>
       </div>
     </div>
@@ -295,15 +302,14 @@ body {
   <aside class="app-sidebar">
     <div class="sidebar-section">
       <div class="section-header"><h3>الطقس - خنشلة</h3></div>
-      <div class="weather-main">
-        <div>
-          <div class="weather-temp">24°</div>
-          <div class="weather-desc">سماء صافية</div>
+      <div id="weatherContent">
+        <div class="weather-main">
+          <div>
+            <div class="weather-temp" id="weatherTemp">--°</div>
+            <div class="weather-desc" id="weatherDesc">جاري التحميل...</div>
+          </div>
         </div>
-      </div>
-      <div class="weather-meta">
-        <span>الرطوبة: 45%</span>
-        <span>الرياح: 12 كم/س</span>
+        <div class="weather-meta" id="weatherMeta"></div>
       </div>
     </div>
 
@@ -324,7 +330,7 @@ body {
   </aside>
 
   <main class="app-main">
-    <div class="featured-slide" id="featuredSlide">
+    <div class="featured-slide" id="featuredSlide" role="region" aria-label="الإعلانات">
       <div class="slide-content" id="slideInner">
         <span class="slide-badge" id="slideBadge">إعلان هام</span>
         <h2 class="slide-title" id="slideTitle">جاري تحميل البيانات...</h2>
@@ -339,13 +345,13 @@ body {
     </div>
 
     <div class="slide-nav">
-      <div class="slide-dots" id="slideDots"></div>
+      <div class="slide-dots" id="slideDots" role="tablist" aria-label="اختيار الشريحة"></div>
       <div class="slide-progress"><div class="slide-progress-bar" id="progressBar"></div></div>
     </div>
   </main>
 
-  <div class="app-ticker">
-    <div class="ticker-label"><span class="live-indicator" style="background:transparent; display:inline-block; width:8px; height:8px; border-radius:50%; background:white; margin-left:5px;"></span> عاجل</div>
+  <div class="app-ticker" role="region" aria-label="أخبار عاجلة">
+    <div class="ticker-label"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:white;"></span> عاجل</div>
     <div class="ticker-track" id="tickerTrack">
     </div>
   </div>
@@ -393,7 +399,7 @@ let dashboardData = {
       title: 'تحديث مواعيد الاستقبال الجماهيري',
       text: 'يُعلم الجميع أن مواعيد الاستقبال قد تم تعديلها لتصبح من 8:00 صباحاً إلى 12:00 ظهراً، ومن 13:00 إلى 16:00 مساءً.',
       date: '13 جويلية 2026', category: 'إدارة',
-      media: '' 
+      media: ''
     },
     {
       badge: 'جديد', type: 'primary',
@@ -411,17 +417,23 @@ let dashboardData = {
   ]
 };
 
+/* ---------- Ticker: seamless -50% loop, single duplicated content block ---------- */
 function initTicker() {
   const track = document.getElementById('tickerTrack');
-  const html = dashboardData.ticker.map(item => `<div class="ticker-item">${item}</div>`).join('<span class="ticker-separator">|</span>');
+  if (!dashboardData.ticker || dashboardData.ticker.length === 0) {
+    track.innerHTML = '<div class="ticker-item">لا توجد أخبار عاجلة حالياً</div>';
+    return;
+  }
+  const html = dashboardData.ticker
+    .map(item => `<div class="ticker-item">${item}</div>`)
+    .join('<span class="ticker-separator">|</span>');
   const groupContent = html + '<span class="ticker-separator">|</span>';
-  track.innerHTML = `
-    <div class="ticker-group">${groupContent}</div>
-    <div class="ticker-group">${groupContent}</div>
-  `;
+  // Two identical copies inside ONE group so translateX(-50%) is always exactly half its own width
+  track.innerHTML = `<div class="ticker-group">${groupContent}${groupContent}</div>`;
 }
 initTicker();
 
+/* ---------- Slider ---------- */
 let currentSlide = 0;
 const slideDuration = 10000;
 let slideTimer = null;
@@ -432,17 +444,27 @@ const slideMediaContainer = document.getElementById('slideMediaContainer');
 const slideDots = document.getElementById('slideDots');
 const progressBar = document.getElementById('progressBar');
 
-dashboardData.slides.forEach((_, i) => {
-  const dot = document.createElement('button');
-  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
-  dot.addEventListener('click', () => goToSlide(i));
-  slideDots.appendChild(dot);
-});
+function buildDots() {
+  slideDots.innerHTML = '';
+  dashboardData.slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('role', 'tab');
+    dot.setAttribute('aria-label', `الشريحة ${i + 1}`);
+    dot.addEventListener('click', () => goToSlide(i));
+    slideDots.appendChild(dot);
+  });
+}
 
 function renderSlide(index) {
+  if (!dashboardData.slides || dashboardData.slides.length === 0) {
+    document.getElementById('slideTitle').textContent = 'لا توجد إعلانات حالياً';
+    document.getElementById('slideText').textContent = 'سيتم عرض الإعلانات الجديدة عند توفرها.';
+    return;
+  }
   const slide = dashboardData.slides[index];
   slideInner.style.opacity = '0';
-  
+
   setTimeout(() => {
     document.getElementById('slideBadge').className = `slide-badge badge-${slide.type}`;
     document.getElementById('slideBadge').textContent = slide.badge;
@@ -450,13 +472,13 @@ function renderSlide(index) {
     document.getElementById('slideText').textContent = slide.text;
     document.getElementById('slideDate').textContent = slide.date;
     document.getElementById('slideCategory').textContent = slide.category;
-    
+
     if (slide.media && slide.media.trim() !== '') {
       slideMediaContainer.classList.add('active');
-      if(slide.media.match(/\.(mp4|webm|ogg)$/i)) {
+      if (slide.media.match(/\.(mp4|webm|ogg)$/i)) {
         slideMediaContainer.innerHTML = `<video src="${slide.media}" autoplay loop muted></video>`;
       } else {
-        slideMediaContainer.innerHTML = `<img src="${slide.media}" alt="Slide Media">`;
+        slideMediaContainer.innerHTML = `<img src="${slide.media}" alt="${slide.title}">`;
       }
     } else {
       slideMediaContainer.classList.remove('active');
@@ -465,7 +487,7 @@ function renderSlide(index) {
 
     slideInner.style.opacity = '1';
   }, 300);
-  
+
   document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === index));
 }
 
@@ -473,7 +495,7 @@ function startProgress() {
   let start = Date.now();
   progressBar.style.width = '0%';
   if (progressInterval) clearInterval(progressInterval);
-  
+
   progressInterval = setInterval(() => {
     const pct = Math.min(((Date.now() - start) / slideDuration) * 100, 100);
     progressBar.style.width = pct + '%';
@@ -489,35 +511,74 @@ function goToSlide(index) {
   slideTimer = setTimeout(nextSlide, slideDuration);
 }
 
-function nextSlide() { 
-  goToSlide((currentSlide + 1) % dashboardData.slides.length); 
+function nextSlide() {
+  if (!dashboardData.slides || dashboardData.slides.length === 0) return;
+  goToSlide((currentSlide + 1) % dashboardData.slides.length);
 }
 
+buildDots();
 renderSlide(0);
 startProgress();
 slideTimer = setTimeout(nextSlide, slideDuration);
 
+/* ---------- Theme toggle ---------- */
 document.getElementById('themeToggle').addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
 });
 
+/* ---------- Clock ---------- */
 function updateClock() {
   const now = new Date();
-  
+
   document.getElementById('clockTime').textContent = now.toLocaleTimeString('ar-DZ', { hour: '2-digit', minute: '2-digit', hour12: false });
-  
+
   const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
   const months = ['جانفي', 'فيفري', 'مارس', 'أفريل', 'ماي', 'جوان', 'جويلية', 'أوت', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
-  
+
   const dayName = days[now.getDay()];
   const dayNum = now.getDate();
   const monthName = months[now.getMonth()];
   const year = now.getFullYear();
-  
+
   document.getElementById('clockDate').textContent = `${dayName} ${dayNum} ${monthName} ${year}`;
 }
 setInterval(updateClock, 1000);
 updateClock();
+
+/* ---------- Live weather (Open-Meteo, no API key needed) with graceful fallback ---------- */
+async function loadWeather() {
+  // Khenchela, Algeria coordinates
+  const lat = 35.4353, lon = 7.1432;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code`;
+
+  const weatherCodeMap = {
+    0: 'سماء صافية', 1: 'صافية غالباً', 2: 'غائم جزئياً', 3: 'غائم',
+    45: 'ضباب', 48: 'ضباب متجمد', 51: 'رذاذ خفيف', 61: 'أمطار خفيفة',
+    63: 'أمطار متوسطة', 65: 'أمطار غزيرة', 71: 'ثلوج خفيفة', 80: 'زخات مطر',
+    95: 'عاصفة رعدية'
+  };
+
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
+    if (!res.ok) throw new Error('weather fetch failed');
+    const data = await res.json();
+    const cur = data.current;
+
+    document.getElementById('weatherTemp').textContent = `${Math.round(cur.temperature_2m)}°`;
+    document.getElementById('weatherDesc').textContent = weatherCodeMap[cur.weather_code] || 'حالة غير معروفة';
+    document.getElementById('weatherMeta').innerHTML = `
+      <span>الرطوبة: ${cur.relative_humidity_2m}%</span>
+      <span>الرياح: ${Math.round(cur.wind_speed_10m)} كم/س</span>
+    `;
+  } catch (err) {
+    document.getElementById('weatherDesc').textContent = 'تعذر تحميل بيانات الطقس';
+    document.getElementById('weatherDesc').classList.add('weather-error');
+    document.getElementById('weatherTemp').textContent = '--°';
+    document.getElementById('weatherMeta').innerHTML = '';
+  }
+}
+loadWeather();
+setInterval(loadWeather, 15 * 60 * 1000); // refresh every 15 min
 </script>
 </body>
 </html>
